@@ -72,6 +72,5 @@ This workflow helps you:
 
 ## 👨‍💻 Author
 
-Developed by **[Your Name](https://github.com/your-username)**
+Developed by **[Naman Gupta](https://github.com/your-username)**
 
-Would you like me to also create a **badges section** at the top (GitHub stars, n8n, LinkedIn, Telegram, Google Sheets) to make it look more professional?
