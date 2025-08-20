@@ -1,0 +1,491 @@
+{
+  "name": "My workflow 4",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 10
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -96,
+        -160
+      ],
+      "id": "ac8d734c-6c92-47cf-b502-a2864afb9bec",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the incoming rows from the Google Sheets node\nconst rows = items.map(item => item.json);\n\n// Filter rows where Status is empty or \"pending\"\nconst filtered = rows.filter(row => {\n    const status = (row.Status || \"\").trim().toLowerCase();\n    return status === \"\" || status === \"pending\";\n});\n\n// Output only the filtered rows\nreturn [filtered[0]].map(row => ({ json: row }));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        352,
+        -160
+      ],
+      "id": "646904ab-89e6-4913-8573-69b6f2a36d58",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1y5vhhUYl-9AVfeBRABQEJ6uAYzs4pV49VttImO4_-L8",
+          "mode": "list",
+          "cachedResultName": "linkedin",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1y5vhhUYl-9AVfeBRABQEJ6uAYzs4pV49VttImO4_-L8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1y5vhhUYl-9AVfeBRABQEJ6uAYzs4pV49VttImO4_-L8/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        128,
+        -160
+      ],
+      "id": "65c9c33c-b6c2-461e-83eb-6ab15a850657",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "DPOhW2XzLrw4kAZ6",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Write a short, human-sounding, and highly engaging LinkedIn post on the topic: \"{{ $json.Topic }}\".\n\nHook them instantly in the first line — make it bold, controversial, or surprising.\n\nWrite in short, punchy sentences with bullet points or numbered points for easy reading.\n\nAdd relevant emojis to bring life and personality to the post.\n\nKeep it informative yet relatable — speak like a human, not a textbook.\n\nInclude a thought-provoking question or micro-CTA at the end to spark conversation.\n\nStay under 120 words so it's quick to read.\n\nEnd with 2–4 trending LinkedIn hashtags.\n\nDo not incluse '*' or do not try to bold.\n\nSound human and you can ignore grammmer rules."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        576,
+        -160
+      ],
+      "id": "0d97dacb-792d-4e69-a11e-3b11b8fb5db0",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "flTTq8cpxpUbBcDn",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "person": "=3hVcCO7DR6",
+        "text": "={{ $json.content.parts[0].text }}",
+        "shareMediaCategory": "IMAGE",
+        "binaryPropertyName": "=data",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.linkedIn",
+      "typeVersion": 1,
+      "position": [
+        1152,
+        -64
+      ],
+      "id": "0296089d-5750-4bef-9d85-e00fb349d765",
+      "name": "Create a post",
+      "credentials": {
+        "linkedInOAuth2Api": {
+          "id": "Fofaeb35AM7s4sUK",
+          "name": "LinkedIn account 5"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://api.linkedin.com/v2/me",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "linkedInOAuth2Api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        160
+      ],
+      "id": "0e5f5bc0-f21c-4cbf-90a4-07b02a838217",
+      "name": "HTTP Request",
+      "credentials": {
+        "linkedInOAuth2Api": {
+          "id": "Fofaeb35AM7s4sUK",
+          "name": "LinkedIn account 5"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1600,
+        -224
+      ],
+      "id": "d4781ed2-6bf8-4c96-a3c5-ec83844ae948",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1y5vhhUYl-9AVfeBRABQEJ6uAYzs4pV49VttImO4_-L8",
+          "mode": "list",
+          "cachedResultName": "linkedin",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1y5vhhUYl-9AVfeBRABQEJ6uAYzs4pV49VttImO4_-L8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1y5vhhUYl-9AVfeBRABQEJ6uAYzs4pV49VttImO4_-L8/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Topic": "={{ $json.Topic }}",
+            "Status": "Completed"
+          },
+          "matchingColumns": [
+            "Topic"
+          ],
+          "schema": [
+            {
+              "id": "Topic",
+              "displayName": "Topic",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1824,
+        -320
+      ],
+      "id": "85ca37a6-6398-42e0-8179-ee4afca58a56",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "DPOhW2XzLrw4kAZ6",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "1377685863",
+        "text": "your daily linkedin post has been posted",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1824,
+        -128
+      ],
+      "id": "2beaab22-4536-4719-9746-038e09824c59",
+      "name": "Send a text message",
+      "webhookId": "2db8c271-ff7a-4411-8593-98ade3a17b20",
+      "credentials": {
+        "telegramApi": {
+          "id": "mkeaoipj7K1EptKw",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "1377685863",
+        "text": "your daily post has not posted",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1600,
+        48
+      ],
+      "id": "50507d13-1c72-4709-a577-7cc0f1fe649d",
+      "name": "Send a text message1",
+      "webhookId": "2db8c271-ff7a-4411-8593-98ade3a17b20",
+      "credentials": {
+        "telegramApi": {
+          "id": "mkeaoipj7K1EptKw",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get incoming rows\nconst rows = items.map(item => item.json);\n\n// Filter for success (Status = \"posted\")\nconst successRows = rows.filter(row => {\n    return (row.Status || \"\").trim().toLowerCase() === \"posted\";\n});\n\n// Add a success flag\nreturn successRows.map(row => ({\n    json: { ...row, result: \"success\" }\n}));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1376,
+        -160
+      ],
+      "id": "0f866b11-9804-4c91-afca-710513d947d7",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get incoming rows\nconst rows = items.map(item => item.json);\n\n// Filter for failures (anything not \"posted\")\nconst failedRows = rows.filter(row => {\n    return (row.Status || \"\").trim().toLowerCase() !== \"posted\";\n});\n\n// Add a failure flag\nreturn failedRows.map(row => ({\n    json: { ...row, result: \"failed\" }\n}));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1376,
+        48
+      ],
+      "id": "2df68e79-4116-46c0-a020-1c66aea21c76",
+      "name": "Code2"
+    },
+    {
+      "parameters": {
+        "url": "={{$json.ImageURL}}\n",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"User-Agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36\",\n  \"Accept\": \"image/avif,image/webp,image/apng,image/*,*/*;q=0.8\",\n  \"Accept-Language\": \"en-US,en;q=0.9\",\n  \"Referer\": \"https://img.hubbis.com/\",\n  \"Connection\": \"keep-alive\"\n}\n",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        640,
+        48
+      ],
+      "id": "3d93207a-0759-4046-8ecc-efeb195e4bad",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        928,
+        -64
+      ],
+      "id": "36846505-5424-44aa-968d-32867a715df5",
+      "name": "Merge1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Create a post": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Code2": {
+      "main": [
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Create a post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "8eba76db-a227-400f-85eb-bbdc1f497275",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e0d1ab7b13c90f7f6cabe91b842d7fb6216aa1165f2f2349509c63e3e4191fd8"
+  },
+  "id": "hfNOVouAHFAqktyJ",
+  "tags": []
+}
