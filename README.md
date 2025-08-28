@@ -1,4 +1,4 @@
-# 🚀 Telegram Daily Poster Bot
+# 🚀 Linkedin Daily Poster Bot
 
 An **automated LinkedIn posting bot** built using **n8n**, **Google Sheets**, **Google Gemini AI**, and **Telegram** for seamless daily content distribution.
 
